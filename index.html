@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rocket Group — Financial Reporting</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+  :root{--red:#E8232A;--dark:#0A0A0A;--card:#111111;--border:#2a2a2a;--text:#ffffff;--muted:#999}
+  body{background:var(--dark);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+  .bg-layer{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .bg-layer::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 30%,rgba(232,35,42,0.12) 0%,transparent 60%),radial-gradient(ellipse 60% 80% at 80% 70%,rgba(180,10,10,0.08) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 50% 10%,rgba(232,35,42,0.06) 0%,transparent 50%)}
+  .bg-wordmark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-8deg);font-family:'Oswald',sans-serif;font-size:22vw;font-weight:700;color:rgba(232,35,42,0.04);white-space:nowrap;letter-spacing:-0.02em;z-index:0;user-select:none;pointer-events:none}
+  .page-wrap{position:relative;z-index:1;padding:40px 30px 80px}
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:60px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+  .logo-area{display:flex;align-items:center;gap:20px}
+  .logo-icon{width:64px;height:64px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .logo-text{display:flex;flex-direction:column;gap:2px}
+  .logo-name{font-family:'Oswald',sans-serif;font-size:2.4rem;font-weight:700;letter-spacing:0.02em;line-height:1}
+  .logo-sub{font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+  .source-link{font-size:0.85rem;color:var(--text);text-decoration:none;border:1px solid var(--border);padding:10px 18px;border-radius:8px;transition:border-color .2s,background .2s;white-space:nowrap}
+  .source-link:hover{border-color:var(--red);background:rgba(232,35,42,0.05)}
+  .header-actions{display:flex;align-items:center;gap:12px}
+  .refresh-btn{font-size:0.85rem;color:var(--muted);background:transparent;border:1px solid var(--border);padding:10px 14px;border-radius:8px;cursor:pointer;transition:border-color .2s,color .2s;white-space:nowrap;display:flex;align-items:center;gap:6px}
+  .refresh-btn:hover{border-color:var(--red);color:var(--text)}
+  .refresh-btn.loading{opacity:0.6;pointer-events:none}
+  .spin{display:inline-block;font-size:1rem}
+  .spin.active{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .section-label{font-size:0.7rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .section-title{font-family:'Oswald',sans-serif;font-size:2.2rem;font-weight:700;margin-bottom:32px}
+  .root-node{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:12px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;margin-bottom:0}
+  .root-name{font-family:'Oswald',sans-serif;font-size:2rem;font-weight:700;letter-spacing:0.06em}
+  .root-meta{font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--red);margin-top:4px}
+  .root-stats{font-size:0.8rem;color:var(--muted);text-align:right}
+  .root-stats span{display:block;font-family:'Oswald',sans-serif;font-size:2.4rem;font-weight:700;color:var(--text);line-height:1}
+  .tree-connector{display:flex;justify-content:center;height:32px;position:relative}
+  .tree-connector::after{content:'';position:absolute;top:0;left:50%;width:1px;height:100%;background:var(--border)}
+  .entity-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:16px;align-items:start}
+  @media(max-width:1100px){.entity-grid{grid-template-columns:1fr 1fr 1fr}}
+  @media(max-width:700px){.entity-grid{grid-template-columns:1fr}}
+  .entity-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;min-width:0}
+  .card-header{padding:20px 24px 16px;border-bottom:1px solid var(--border)}
+  .card-abbr{font-family:'Oswald',sans-serif;font-size:1.7rem;font-weight:700;color:var(--red);letter-spacing:0.04em}
+  .card-body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:16px}
+  .year-section{display:flex;flex-direction:column;gap:6px}
+  .year-heading{font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--red);font-weight:600;margin-bottom:4px}
+  .report-link{display:block;font-size:0.82rem;color:var(--muted);text-decoration:none;padding:3px 0 3px 16px;position:relative;transition:color .15s}
+  .report-link::before{content:'\2192';position:absolute;left:0;color:var(--border);transition:color .15s}
+  .report-link:hover{color:var(--text)}
+  .report-link:hover::before{color:var(--red)}
+  .status-bar{font-size:0.72rem;color:var(--muted);text-align:center;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+  .footer{margin-top:60px;padding-top:24px;border-top:1px solid var(--border);font-size:0.75rem;color:var(--muted);text-align:center}
+</style>
+</head>
+<body>
+
+<div class="bg-layer"></div>
+<div class="bg-wordmark">ROCKET</div>
+
+<div class="page-wrap">
+
+  <header class="header">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="64" height="64" rx="12" fill="#E8232A"/>
+          <path d="M12 12 L12 52 L22 52 L22 38 L30 38 L38 52 L50 52 L41 36 C45 34 48 29 48 23 C48 16 42 12 34 12 Z M22 21 L33 21 C36 21 38 23 38 25 C38 27 36 29 33 29 L22 29 Z" fill="white"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-name">Rocket Group</div>
+        <div class="logo-sub">Holding Structure</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="refresh-btn" onclick="loadData(true)" id="refreshBtn">
+        <span class="spin" id="refreshIcon">&#8635;</span> Обновить данные
+      </button>
+      <a class="source-link" href="https://docs.google.com/spreadsheets/d/18jXd7ojPyXaFa_rD81u9Ygzesql5K4TdGarTx5wxgVA/edit?gid=315784474#gid=315784474" target="_blank">
+        &#128202; Исходная таблица отчётов
+      </a>
+    </div>
+  </header>
+
+  <div class="section-label">Структура холдинга</div>
+  <div class="section-title">Rocket Group &#8212; Financial Reporting</div>
+
+  <div class="root-node">
+    <div>
+      <div class="root-name">ROCKET GROUP</div>
+      <div class="root-meta">Управляющая компания холдинга</div>
+    </div>
+    <div class="root-stats">
+      <span id="entityCount">5</span>
+      структурных единиц
+    </div>
+  </div>
+
+  <div class="tree-connector"></div>
+
+  <div class="entity-grid" id="entityGrid">
+    <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted)">&#9203; Загрузка данных...</div>
+  </div>
+
+  <div class="status-bar" id="statusBar"></div>
+
+  <footer class="footer">
+    <div>&#169; Rocket Group &#8212; Financial Reporting Dashboard</div>
+  </footer>
+
+</div>
+
+
+<script>
+const SPREADSHEET_ID = '18jXd7ojPyXaFa_rD81u9Ygzesql5K4TdGarTx5wxgVA';
+const SHEET_GID = '315784474';
+const ENTITIES = [
+  { key: 'Rocket', col: 2, label: 'ROCKET' },
+  { key: 'RTP',    col: 3, label: 'RTP' },
+  { key: 'SG',     col: 4, label: 'SG' },
+  { key: 'HB',     col: 5, label: 'HB' },
+  { key: 'MP',     col: 6, label: 'MP' }
+];
+
+// Define the google visualization namespace to intercept the response
+window.google = window.google || {};
+window.google.visualization = window.google.visualization || {};
+window.google.visualization.Query = window.google.visualization.Query || {};
+window.google.visualization.Query.setResponse = function(resp) {
+  try {
+    if (resp && resp.table) {
+      const data = parseSheetData(resp);
+      renderDashboard(data, new Date().toLocaleString('ru-RU'));
+    } else {
+      renderFallback();
+      document.getElementById('statusBar').textContent = 'Нет данных в таблице. Используются кэшированные данные.';
+    }
+  } catch(e) {
+    console.error('Parse error:', e);
+    renderFallback();
+  }
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  if (btn) btn.classList.remove('loading');
+  if (icon) icon.classList.remove('active');
+};
+
+function parseSheetData(json) {
+  const rows = json.table.rows;
+  const result = {};
+  ENTITIES.forEach(e => { result[e.key] = {}; });
+  let currentYear = null;
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row.c) continue;
+    const getCell = (idx) => {
+      const c = row.c[idx];
+      if (!c) return { v: '', f: '' };
+      return { v: c.v !== null && c.v !== undefined ? String(c.v) : '', f: c.f || '' };
+    };
+    const cellA = getCell(0).v.trim();
+    const cellB = getCell(1).v.trim();
+    if (cellA.toLowerCase().indexOf('rocket group_') === 0) continue;
+    if (cellB === 'Наименование отчета') continue;
+    const yearMatch = cellA.match(/^(20\d\d)$/);
+    if (yearMatch) currentYear = yearMatch[1];
+    if (!currentYear || !cellB) continue;
+    ENTITIES.forEach(entity => {
+      const cell = getCell(entity.col);
+      let text = cell.v;
+      let url = '';
+      if (cell.f && cell.f.indexOf('HYPERLINK') > -1) {
+        const m = cell.f.match(/HYPERLINK\s*\(\s*"([^"]+)"\s*,\s*"([^"]+)"\s*\)/i);
+        if (m) { url = m[1]; text = m[2]; }
+      }
+      if (!text || text.indexOf('*') === 0 || text.trim() === '') return;
+      if (!result[entity.key][currentYear]) result[entity.key][currentYear] = [];
+      result[entity.key][currentYear].push({ text: text.trim(), url });
+    });
+  }
+  return result;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderDashboard(data, ts) {
+  const grid = document.getElementById('entityGrid');
+  let html = '';
+  ENTITIES.forEach((entity, idx) => {
+    html += '<div class="entity-card">';
+    html += '<div class="card-header"><div class="card-abbr">' + entity.label + '</div></div>';
+    html += '<div class="card-body">';
+    const ed = data[entity.key] || {};
+    const eys = Object.keys(ed).sort((a,b) => b-a);
+    if (!eys.length) {
+      html += '<div style="font-size:.8rem;color:var(--muted)">Нет данных</div>';
+    } else {
+      eys.forEach(yr => {
+        const reps = ed[yr];
+        if (!reps || !reps.length) return;
+        html += '<div class="year-section"><div class="year-heading">Financial Reporting ' + yr + '</div>';
+        reps.forEach(r => {
+          if (r.url) html += '<a class="report-link" href="' + esc(r.url) + '" target="_blank">' + esc(r.text) + '</a>';
+          else html += '<span class="report-link" style="cursor:default">' + esc(r.text) + '</span>';
+        });
+        html += '</div>';
+      });
+    }
+    html += '</div></div>';
+  });
+  grid.innerHTML = html;
+  if (ts) document.getElementById('statusBar').textContent = 'Данные обновлены: ' + ts;
+}
+
+function loadData(force) {
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  if (btn) btn.classList.add('loading');
+  if (icon) icon.classList.add('active');
+  const old = document.querySelectorAll('script[data-sheets]');
+  old.forEach(s => s.remove());
+  const bust = force ? ('&_=' + Date.now()) : '';
+  const s = document.createElement('script');
+  s.setAttribute('data-sheets', '1');
+  s.src = 'https://docs.google.com/spreadsheets/d/' + SPREADSHEET_ID + '/gviz/tq?tqx=out:json&gid=' + SHEET_GID + bust;
+  s.onerror = function() {
+    document.getElementById('statusBar').textContent = 'Ошибка загрузки. Используются кэшированные данные.';
+    renderFallback();
+    if (btn) btn.classList.remove('loading');
+    if (icon) icon.classList.remove('active');
+  };
+  document.head.appendChild(s);
+}
+
+function renderFallback() {
+  const fb = {
+    Rocket:{
+      '2026':[{text:'ДДС',url:'https://docs.google.com/spreadsheets/d/1INdJMLgZ_s6iYwCRsuoklXsiHYKXIsgMtd2FwMBdG0M/edit'},{text:'ОПиУ',url:'https://docs.google.com/spreadsheets/d/1HYW0qrIY3RSSB95Y1D85kZugqyjXVfZb8tgb8ITPHuA/edit'},{text:'LTV:LV:Обороты_2026',url:'https://docs.google.com/spreadsheets/d/1OW9yDdMeMjGHtAl3OvGK6NPff5Ro8-juKoomt_4hrmM/edit'},{text:'Выручка Афф отдел',url:'https://docs.google.com/spreadsheets/d/1aINDHeUw45OMRaAgVK8Eowk4T8vXuZJxGLxeR6IVPcI/edit'},{text:'Баланс',url:'https://docs.google.com/spreadsheets/d/1HimTej53Zpf-BFwSm4_ceZMnUXehFQTXYDhMmeaUKj0/edit'},{text:'Учет ДЗ и КЗ клиентов',url:'https://docs.google.com/spreadsheets/d/17kIq7DXkChdTA3GtfecMwCdD6lkq3p7BHfWdr9vD5Wo/edit'},{text:'Учет ДЗ и КЗ поставщиков',url:'https://docs.google.com/spreadsheets/d/1xwbmsW8AULxha5aCUiFTjHwJOtgJrqb1ZSkg4FZzie4/edit'},{text:'Учет ДЗ и КЗ по обменам',url:'https://docs.google.com/spreadsheets/d/11suHpDg9msWxDEE8O68QgHDkGY4qQV1iXEN1P5rNN0E/edit'},{text:'Учет ФД',url:'https://docs.google.com/spreadsheets/d/1Nh2NoQUoosdZuzd6JUrnYZza3-hpSO-g44ubXNvoZ5I/edit'},{text:'Учет ОС',url:'https://docs.google.com/spreadsheets/d/1-OnzKodJOAxsarbssNQjON0UjC3HRUzZnQs-0USv9XA/edit'},{text:'Зарплатная ведомость',url:'https://docs.google.com/spreadsheets/d/14-fQltrOCC0p4kC0WVj5YTxLdjb3-gxdIs64unpiUZU/edit'},{text:'Учет налогов',url:'https://docs.google.com/spreadsheets/d/1pDdAKExn8yAns2x4EJUhYJL9HuHE_vnX-_QGRZTC4ck/edit'},{text:'Бюджет 2026',url:'https://drive.google.com/drive/folders/1Mu9cgWv77TxMmorR1UizqoV3F0O6UHBR'},{text:'Финансовая модель',url:'https://docs.google.com/spreadsheets/d/1zWuG7kt3BQWTLXuAW0O0hRJ0erusd6YDydf2vQlP5hs/edit'},{text:'Платежный календарь',url:'https://docs.google.com/spreadsheets/d/1AJOle9ZpGnkga3zOaTi5Ky5Do07G5QaVeAgoXNibiog/edit'},{text:'Планирование продаж',url:'https://docs.google.com/spreadsheets/d/1NvYKyj6uDxPpIFG6LIRJAlv2l7pvfsAWn40HMklc_18/edit'}],
+      '2025':[{text:'ДДС',url:'https://docs.google.com/spreadsheets/d/1_4FEp4UZg8St2PxWad5Tj9WEqeOfwWS9XHDLxUoBAZw/edit'},{text:'ОПиУ',url:'https://docs.google.com/spreadsheets/d/1T_4jpYELGENZVhixUjeldDOekc_wzUjrRmYATgvHYmo/edit'},{text:'Выручка Афф отдел',url:'https://docs.google.com/spreadsheets/d/1aINDHeUw45OMRaAgVK8Eowk4T8vXuZJxGLxeR6IVPcI/edit'},{text:'Баланс',url:'https://docs.google.com/spreadsheets/d/1Y58VgJZUa2fjYNcW5juTUhfd6RDVB2GHZjCMbYCYeiw/edit'},{text:'Учет ДЗ и КЗ клиентов',url:'https://docs.google.com/spreadsheets/d/176YWLI20bBcPEcE5GOEs3gHHjKDmut4YoOZPgZp770I/edit'},{text:'Учет ДЗ и КЗ по обменам',url:'https://docs.google.com/spreadsheets/d/1K9UlZ1o7bXnnUWmGXFsZHwSNSqCFldOgErUTixIzmns/edit'},{text:'Учет ФД',url:'https://docs.google.com/spreadsheets/d/1d9CfIkgA66xKQC7cbjruFvZ20uuw4FhDvJfSlbLinBw/edit'},{text:'Учет ОС',url:'https://docs.google.com/spreadsheets/d/1sbEzQwU2DIg106HZ1-B9Jxg-_lmLmiNUO28gPr2m2gk/edit'},{text:'Зарплатная ведомость',url:'https://docs.google.com/spreadsheets/d/1l_lpKWMGyWzL_d5gXKDJ61BPDA-1FXwRij0OrAyR3FI/edit'},{text:'Учет налогов',url:'https://docs.google.com/spreadsheets/d/1IKfy7-oa6VcexYx3vN2N0J83KdJ2JB-4qbNGQQupWqQ/edit'},{text:'Финансовая модель',url:'https://docs.google.com/spreadsheets/d/1zWuG7kt3BQWTLXuAW0O0hRJ0erusd6YDydf2vQlP5hs/edit'},{text:'Платежный календарь',url:'https://docs.google.com/spreadsheets/d/13377VP1V9ms3a5iFfKfF7a8ZmeCbaYe4zlOL0c05jsk/edit'},{text:'Планирование продаж',url:'https://docs.google.com/spreadsheets/d/1NvYKyj6uDxPpIFG6LIRJAlv2l7pvfsAWn40HMklc_18/edit'}],
+      '2024':[{text:'ДДС',url:'https://docs.google.com/spreadsheets/d/1sYKVTSTr7W_unVbuzc5laQD9amjQoZax3M_VbE_3hqU/edit'},{text:'ОПиУ',url:'https://docs.google.com/spreadsheets/d/1V1Vhm2eN5H8O76aH6blmbzGoZZortMHG1ixJF0qSBuA/edit'},{text:'Выручка Афф отдел',url:'https://docs.google.com/spreadsheets/d/1aINDHeUw45OMRaAgVK8Eowk4T8vXuZJxGLxeR6IVPcI/edit'},{text:'Учет ДЗ и КЗ клиентов',url:'https://docs.google.com/spreadsheets/d/18CMCzapeCinyG45N0PVdQv47WWGXGRd_ywDAfFhMxz4/edit'},{text:'Учет ДЗ и КЗ поставщиков',url:'https://docs.google.com/spreadsheets/d/1knuoIIfaKSScQJa4WsUonrgbLOa_GFny9lg8mH08kzM/edit'},{text:'Учет ФД',url:'https://docs.google.com/spreadsheets/d/1d9CfIkgA66xKQC7cbjruFvZ20uuw4FhDvJfSlbLinBw/edit'},{text:'Учет ОС',url:'https://docs.google.com/spreadsheets/d/11ZpJ_VuKB_u57ujVd6y6nOiFfi56913vL6paOz1j4L4/edit'},{text:'Зарплатная ведомость',url:'https://docs.google.com/spreadsheets/d/1w47DyzE3KhnfcLXrLt4060ZFw59DiLn0NrSHEdsFrnA/edit'},{text:'Платежный календарь',url:'https://docs.google.com/spreadsheets/d/1qCK33TjzSEgkuZlNy3TAEL_f5Pvi1jKgoYrk_od32tY/edit'},{text:'Финансовая модель',url:'https://docs.google.com/spreadsheets/d/1YI64Adg2ahOnSVmMM16sw94zIJV8hDnL_V6awQNuOr0/edit'},{text:'Планирование продаж',url:'https://docs.google.com/spreadsheets/d/1NvYKyj6uDxPpIFG6LIRJAlv2l7pvfsAWn40HMklc_18/edit'}],
+      '2023':[{text:'ДДС',url:'https://docs.google.com/spreadsheets/d/13DKQz2br4m1zGLVc4TV3oCNnZNhHyItGuQkvQNem-Gk/edit'},{text:'Учет ОС',url:'https://docs.google.com/spreadsheets/d/1hDpX_bFF2XWP7lmbj7YNRxRhkZ0gwSu9cZBTYr7aupk/edit'}]
+    },
+    RTP:{'2026':[{text:'New_RTP_finreport',url:'https://docs.google.com/spreadsheets/d/1Z1evy0d132rhsSsGw_TQm1Z4v9L-y7g2bAjNMV_YlcQ/edit'}],'2025':[{text:'New_RTP_finreport',url:'https://docs.google.com/spreadsheets/d/1Z1evy0d132rhsSsGw_TQm1Z4v9L-y7g2bAjNMV_YlcQ/edit'}],'2024':[{text:'New_RTP_finreport',url:'https://docs.google.com/spreadsheets/d/1Z1evy0d132rhsSsGw_TQm1Z4v9L-y7g2bAjNMV_YlcQ/edit'}]},
+    SG:{'2026':[{text:'New_SEO_finreport',url:'https://docs.google.com/spreadsheets/d/1ryQufzJ4PHj7K04C-tSvQkkyqQXAbOiu0N-CyYB6108/edit'},{text:'Выручка SEO отдел',url:'https://docs.google.com/spreadsheets/d/18D6Ts0no_97uq5R2KeH_4Ta1lxgcNlvOXqlIaKFcxfA/edit'}],'2025':[{text:'New_SEO_finreport',url:'https://docs.google.com/spreadsheets/d/1ryQufzJ4PHj7K04C-tSvQkkyqQXAbOiu0N-CyYB6108/edit'},{text:'Выручка SEO отдел',url:'https://docs.google.com/spreadsheets/d/18D6Ts0no_97uq5R2KeH_4Ta1lxgcNlvOXqlIaKFcxfA/edit'}],'2024':[{text:'New_SEO_finreport',url:'https://docs.google.com/spreadsheets/d/1ryQufzJ4PHj7K04C-tSvQkkyqQXAbOiu0N-CyYB6108/edit'}]},
+    HB:{'2026':[{text:'HB_ДДС: 2026',url:'https://docs.google.com/spreadsheets/d/1_TV-PP8ehIKXhkMGKbCkwWZCU2AkLEMhnjyJ45Z4MYc/edit'}],'2025':[{text:'New_НВ_ДДС: 2025',url:'https://docs.google.com/spreadsheets/d/1fBpm8DWXNfaRCpvZOMPN6lyUBCn17vjcm6-Xl76Lumg/edit'},{text:'Стратегия handbox.by v1.00',url:'https://docs.google.com/spreadsheets/d/1Ony2A_zhfFh_CO4Eefop8R34VQrv5eW5cFPSvrDwzQE/edit'}]},
+    MP:{'2026':[{text:'Mannequin partners (finreport)',url:'https://docs.google.com/spreadsheets/d/1kXIr-QmBUrGUGNcCXuXh3N9iK-T0A5innds_pbNX-7k/edit'}]}
+  };
+  renderDashboard(fb, null);
+}
+
+loadData(false);
+</script>
+
+</body>
+</html>
